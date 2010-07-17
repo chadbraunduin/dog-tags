@@ -1,6 +1,6 @@
 (ns
     #^{:author "Chad Braun-Duin"
-       :doc "creates an HTML tag list or tag cloud from sequence of tags"}
+       :doc "creates an HTML tag list or tag cloud from a sequence of hash-maps"}
   dog-tags.core
   (:use
    [hiccup.core :only (html)]))
@@ -10,9 +10,11 @@
 
 (defn- rank-tags
   "Creates a hash-map with the tag name as the key
-and the count of ocurrances as the value
+and the count of occurrences as the value.
 The input should be a collection of hash-maps with :tags as the key
-and a vector of tags (as strings) as the value"
+and a vector of tags (as strings) as the value.
+Tags are case-insensitive.
+"
   ([tag-list] (rank-tags tag-list {}))
   ([tag-list rank]
      (if (empty? tag-list)
@@ -27,7 +29,7 @@ and a vector of tags (as strings) as the value"
 
 (defn create-tag-list
   "Creates an html unordered list of tag links with their occurrences.
-In addition to the list of tag maps, you can pass in some options.
+In addition to the list of tag hash-maps, you can pass in some options.
 These are:
   :sort :values | nil
   :limit N 
@@ -53,10 +55,4 @@ These are:
         [:ul
          list-items
          ]))))
-(println (create-tag-list [
-                   {:tags ["programming" "clojure"]}
-                   {:tags ["Programming" "c" "rant" "programming"]}
-                   {:tags ["politics" "rant"]}
-                   {:tags ["programming" "python"]}
-                   ]
-                  {:sort :values :limit 3}))
+
