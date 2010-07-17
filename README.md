@@ -11,7 +11,8 @@ dog-tags is essentially two functions.
 
 Each takes the same data as input but outputs different html.
 
-## Creating a tag list
+## Usage
+### Creating a tag list
 basic usage is as follows. Pass a sequence of maps to create-tag-list. This will return
 an html unordered list of tag links with their occurrences.
 
@@ -50,8 +51,23 @@ results.
      <li><a href="/tags/clojure">clojure</a>&nbsp;(1)</li>
     </ul>
 
-## Creating a tag cloud
+### Creating a tag cloud
 This functionality has not been created, yet.
+
+### Changing the tag-root
+
+You can change the tag-root (e.g. the value "/tags/") to something
+else by binding *tag-root* to another value
+
+    (binding [*tag-root* "/labels/" ]
+     (create-tag-list [{:tags [ "chad" "bob" ] } {:tags [ "chad" "sammy" ] }]))
+
+    =>
+    <ul>
+     <li><a href="/labels/bob">bob</a>&nbsp;(1)</li>
+     <li><a href="/labels/chad">chad</a>&nbsp;(2)</li>
+     <li><a href="/labels/sammy">sammy</a>&nbsp;(1)</li>
+    </ul>
 
 ## Installation
 
@@ -67,5 +83,5 @@ to get dog-task into your application
 
 ## TODO
 
-Create the tag cloud functionality.
-Add tests.
+* Create the tag cloud functionality.
+* Add tests.
