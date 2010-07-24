@@ -130,7 +130,7 @@ else by binding *tag-root* to another value
 
 Leiningen is the recommended way to use dog-tags. Just add
 
-    [dog-tags "1.1.0-SNAPSHOT"]
+    [dog-tags "1.1.0"]
 
 to your project.clj and run
 
