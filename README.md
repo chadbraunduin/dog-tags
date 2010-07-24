@@ -12,19 +12,33 @@ dog-tags is essentially two functions.
 
 Each takes the same data as input but outputs different html.
 
+## Installation
+
+Leiningen is the recommended way to use dog-tags. Just add
+
+    [dog-tags "1.1.0"]
+
+to your project.clj and run
+
+    $lein deps
+
+to get dog-tags into your application
+
 ## Usage
+
+    user=> (use 'dog-tags.core)
+    nil
+
 ### Creating a tag list
-basic usage is as follows. Pass a sequence of maps to create-tag-list. This will return
+Pass a sequence of maps to create-tag-list. This will return
 an html unordered list of tag links with their occurrences.
 
-    (create-tag-list [
+    user=> (create-tag-list [
                   {:tags ["programming" "clojure"]}
                   {:tags ["Programming" "c" "rant" "programming"]}
                   {:tags ["politics" "rant"]}
                   {:tags ["programming" "python"]}
-                  ])
-
-    => 
+                  ]) 
     <ul>
      <li><a href="/tags/c">c</a>&nbsp;(1)</li>
      <li><a href="/tags/clojure">clojure</a>&nbsp;(1)</li>
@@ -37,15 +51,13 @@ an html unordered list of tag links with their occurrences.
 You may also pass in options to sort by values (higher values at the top) and to limit the
 results.
 
-    (create-tag-list [
+    user=> (create-tag-list [
                   {:tags ["programming" "clojure"]}
                   {:tags ["Programming" "c" "rant" "programming"]}
                   {:tags ["politics" "rant"]}
                   {:tags ["programming" "python"]}
                   ]
-                 {:sort :values :limit 3})
-
-    => 
+                 {:sort :values :limit 3}) 
     <ul>
      <li><a href="/tags/programming">programming</a>&nbsp;(4)</li>
      <li><a href="/tags/rant">rant</a>&nbsp;(2)</li>
@@ -53,18 +65,16 @@ results.
     </ul>
 
 ### Creating a tag cloud
-basic usage is as follows. Pass a sequence of maps to create-tag-cloud. This will return
+Pass a sequence of maps to create-tag-cloud. This will return
 an html sequence of tag links with their size adjusted according to
 their frequency of occurrence.
 
-    (create-tag-cloud [
+    user=> (create-tag-cloud [
                     {:tags ["programming" "clojure"]}
                     {:tags ["Programming" "c" "rant" "programming"]}
                     {:tags ["politics" "rant"]}
                     {:tags ["programming" "python"]}
                     ])
-
-    =>
     <a href="/tags/c" style="font-size: 100%;">c</a> 
     <a href="/tags/clojure" style="font-size: 100%;">clojure</a> 
     <a href="/tags/politics" style="font-size: 100%;">politics</a> 
@@ -79,7 +89,7 @@ changed by binding
 
 For example, this will change the percent range to 100% to 200%:
 
-    (binding [*max-percent* 200]
+    user=> (binding [*max-percent* 200]
      (create-tag-cloud [
                     {:tags ["programming" "clojure"]}
                     {:tags ["Programming" "c" "rant" "programming"]}
@@ -93,15 +103,13 @@ hiccup project to turn the results into html. If you are also using
 hiccup in your project and would like to receive the results in the
 hiccup format, use the :hiccup option in either function. For example,
 
-    (create-tag-cloud [
+    user=> (create-tag-cloud [
                     {:tags ["programming" "clojure"]}
                     {:tags ["Programming" "c" "rant" "programming"]}
                     {:tags ["politics" "rant"]}
                     {:tags ["programming" "python"]}
                     ]
     {:format :hiccup}))
-
-    =>
     (
      ([:a {:href /tags/c, :style font-size: 100%;} c]  ) 
      ([:a {:href /tags/clojure, :style font-size: 100%;} clojure]  ) 
@@ -116,24 +124,10 @@ hiccup format, use the :hiccup option in either function. For example,
 You can change the tag-root (e.g. the value "/tags/") to something
 else by binding *tag-root* to another value
 
-    (binding [*tag-root* "/labels/" ]
+    user=> (binding [*tag-root* "/labels/" ]
      (create-tag-list [{:tags [ "chad" "bob" ] } {:tags [ "chad" "sammy" ] }]))
-
-    =>
     <ul>
      <li><a href="/labels/bob">bob</a>&nbsp;(1)</li>
      <li><a href="/labels/chad">chad</a>&nbsp;(2)</li>
      <li><a href="/labels/sammy">sammy</a>&nbsp;(1)</li>
     </ul>
-
-## Installation
-
-Leiningen is the recommended way to use dog-tags. Just add
-
-    [dog-tags "1.1.0"]
-
-to your project.clj and run
-
-    $lein deps
-
-to get dog-task into your application
