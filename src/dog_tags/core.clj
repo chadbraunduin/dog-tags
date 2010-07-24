@@ -1,7 +1,5 @@
-(ns
-    #^{:author "Chad Braun-Duin"
-       :doc "creates an HTML tag list or tag cloud from a sequence of hash-maps"}
-  dog-tags.core
+(ns dog-tags.core
+  "creates an HTML tag list or tag cloud from a sequence of hash-maps"
   (:use
    [hiccup.core :only (html)]))
 
@@ -27,12 +25,19 @@ Tags are case-insensitive.
                               (map (fn [tag] (count (filter #{tag} tags))) tags)))]
          (recur (rest tag-list) (merge-with + rank new-rank))))))
 
+(defn- render-results
+  [hiccup-list format]
+  (if (= format :hiccup)
+    hiccup-list
+    (html hiccup-list)))
+
 (defn create-tag-list
   "Creates an html unordered list of tag links with their occurrences.
 In addition to the list of tag hash-maps, you can pass in some options.
 These are:
   :sort :values | nil
-  :limit N 
+  :limit N
+  :format :hiccup | nil
 "
   ([tag-list] (create-tag-list tag-list {}))
   ([tag-list options]
@@ -51,8 +56,47 @@ These are:
            list-items (if (nil? limit)
                         mapped-items
                         (take limit mapped-items))]
-       (html
+       (render-results
         [:ul
          list-items
-         ]))))
+         ] (:format options)))))
 
+(def *min-percent* 100)
+(def *max-percent* 150)
+(defn- percent-range [] (- *max-percent* *min-percent*))
+
+(defn- size-increment
+  [min-rank max-rank]
+  (/ (- *max-percent* *min-percent*) (- max-rank min-rank)))
+
+(defn- get-percent
+  [min-rank max-rank this-rank]
+  (let [min-max-range (- max-rank min-rank)
+        this-percent (/ this-rank min-max-range)
+        size-inc (size-increment min-rank max-rank)
+        offset (Math/round (float (- (* this-percent (percent-range)) size-inc)))]
+    (+ *min-percent* offset)))
+(get-percent 1 11 9)
+
+(defn create-tag-cloud
+  "Creates an html list of tag links with their sizes adjusted according to their
+occurrences. In addition to the list of tag hash-maps, you can pass in some options.
+These are:
+  :format :hiccup | nil
+"
+  ([tag-list] (create-tag-cloud tag-list {}))
+  ([tag-list options]
+     (let [rank (rank-tags tag-list)
+           rank-vals (vals rank)
+           min-rank (apply min rank-vals)
+           max-rank (apply max rank-vals)
+           p-percent (partial get-percent min-rank max-rank)]
+       (render-results
+        (map
+         #(list
+           (vector :a
+                   {:href (str *tag-root* (key %))
+                    :style (str "font-size: " (p-percent (val %)) "%;")} (key %))
+           " ")
+         (into (sorted-map) rank))
+        (:format options)))))
